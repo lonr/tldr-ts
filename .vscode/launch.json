@@ -1,0 +1,26 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Program",
+      "request": "launch",
+      "type": "node",
+      "program": "${workspaceFolder}/src/cli.ts",
+      // "args": ["${input:args}"],
+      "args": ["-L", "zh_CN", "ls"],
+      "preLaunchTask": "${defaultBuildTask}",
+      "skipFiles": ["<node_internals>/**"]
+    }
+  ],
+  "inputs": [
+    {
+      "id": "args",
+      "type": "promptString",
+      "description": "Args",
+      "default": "ls"
+    }
+  ]
+}
