@@ -1,79 +1,64 @@
-import yargs from 'yargs';
-import { hideBin } from 'yargs/helpers';
-// https://stackoverflow.com/a/72892148/5783347
+import { platform as localPlatform } from 'node:os';
+import { fileURLToPath } from 'node:url';
+import parseArgs from 'minimist';
+import { resolve } from 'node:path';
+import { normalize } from './platform.js';
+import { resolveConfig, Tldr } from './tldr.js';
 import pkg from '#package.json' assert { type: 'json' };
 export { pkg };
 export type PKG = typeof pkg;
-import {
-  knownPlatforms,
-  getLocalPlatform,
-  normalize as normalizePlatform,
-} from './platform.js';
-import { Tldr, SPEC_VERSION } from './tldr.js';
 
-export type Argv = {
+const SPEC_VERSION = '1.5';
+const PAGES_REPO = 'https://github.com/tldr-pages/tldr';
+const ROOT_DIR = fileURLToPath(new URL('../', import.meta.url));
+const README_PATH = resolve(ROOT_DIR, 'README.md');
+
+export type Args = {
   _: string[];
-  $0: string;
   platform: string;
   language: string;
   update: boolean;
+  version: boolean;
 };
-const parser = yargs(hideBin(process.argv));
 
-await parser
-  .scriptName('tldr')
-  .usage('$0 [OPTIONS] [COMMAND]...')
-  .command(
-    '$0',
-    'the default command',
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    () => {},
-    // needs investigation
-    // async (argv: Argv) => {
-    async (argv) => {
-      const { _: commands, update } = argv as Argv;
-      if (!update && commands.length === 0) {
-        parser.showHelp();
-        return;
-      }
-      const tldr = await Tldr.default(pkg);
-      if (update) {
-        await tldr.update();
-      }
-      if (commands.length >= 0) {
-        await tldr.print(argv as Argv);
-      }
-    }
-  )
-  .example([
-    ['$0', 'ls'],
-    ['$0', 'git clone'],
-  ])
-  .options('language', {
-    alias: 'L',
-    describe: 'Specifies the preferred language',
-    default: () => parser.locale(),
-    defaultDescription: 'os language',
-  })
-  .options('platform', {
-    alias: 'p',
-    describe: `Specifies the platform [supported: ${knownPlatforms.join(
-      ', '
-    )}]`,
-    coerce: normalizePlatform,
-    default: getLocalPlatform,
-    defaultDescription: 'os platform',
-  })
-  .options('update', {
-    alias: 'u',
-    type: 'boolean',
-    describe: 'Update pages data',
-  })
-  .help()
-  .alias('h', 'help')
-  .version(
-    'version',
+const args: Args = parseArgs(process.argv.slice(2), {
+  string: ['language', 'platform'],
+  boolean: ['update', 'version'],
+  alias: {
+    L: 'language',
+    p: 'platform',
+    u: 'update',
+    v: 'version',
+  },
+  default: {
+    language: Intl.DateTimeFormat().resolvedOptions().locale,
+    platform: localPlatform(),
+  },
+}) as Args;
+
+const { _: commands, update, language, platform, version } = args;
+
+if (version) {
+  console.log(
     `${pkg.name} ${pkg.version} (tldr-pages client specification ${SPEC_VERSION})`
-  )
-  .alias('v', 'version')
-  .parse();
+  );
+  process.exit();
+}
+
+const tldr = new Tldr(resolveConfig(pkg, PAGES_REPO, README_PATH));
+
+if (update) {
+  await tldr.update();
+  process.exit();
+}
+
+await tldr.init();
+
+if (commands.length === 0) {
+  await tldr.renderReadme();
+  process.exit();
+}
+
+const command = commands.join('-').toLowerCase();
+const normalizedPlatform = normalize(platform);
+await tldr.renderPage(command, language, normalizedPlatform);

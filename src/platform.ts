@@ -1,6 +1,4 @@
 // https://github.com/tldr-pages/tldr-node-client/blob/master/lib/platform.js
-import { platform } from 'node:os';
-
 export const knownPlatforms = [
   'osx',
   'macos',
@@ -41,8 +39,4 @@ function isKnown(platform: string): platform is knownPlatform {
 
 export function normalize(platform: string): CanonicalPlatform | string {
   return isKnown(platform) ? platformMap[platform] : platform;
-}
-
-export function getLocalPlatform(): CanonicalPlatform | string {
-  return normalize(platform());
 }

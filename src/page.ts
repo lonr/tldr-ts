@@ -1,9 +1,9 @@
 import { readFile } from 'node:fs/promises';
-import chalk from 'chalk';
+import pico from 'picocolors';
 
-const exampleText = chalk.green;
-const exampleCode = chalk.cyan;
-const exampleCodeHighted = chalk.underline;
+const exampleText = pico.green;
+const exampleCode = pico.cyan;
+const exampleCodeHighlighted = pico.underline;
 
 const spaces = '  ';
 
@@ -32,7 +32,7 @@ function render(mkd: string): string {
               exampleCode(
                 buffer
                   .slice(1, buffer.length - 1)
-                  .replaceAll(/{{([^}]*)}}/g, exampleCodeHighted('$1'))
+                  .replaceAll(/{{([^}]*)}}/g, exampleCodeHighlighted('$1'))
               ) +
               '\n';
             break;
