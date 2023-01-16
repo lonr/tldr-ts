@@ -9,6 +9,7 @@ const config = defineConfig({
   input: 'src/cli.ts',
   output: {
     dir: 'dist',
+    chunkFileNames: 'dep.js',
     format: 'es',
   },
   plugins: [
