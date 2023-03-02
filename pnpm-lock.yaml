@@ -18,7 +18,7 @@ specifiers:
   '@typescript-eslint/parser': ^5.48.1
   chokidar: ^3.5.3
   cz-conventional-changelog: ^3.3.0
-  directories-js: ^0.1.0
+  env-paths: ^3.0.0
   eslint: ^8.32.0
   eslint-config-prettier: ^8.6.0
   husky: ^8.0.3
@@ -50,7 +50,7 @@ devDependencies:
   '@typescript-eslint/parser': 5.48.1_7uibuqfxkfaozanbtbziikiqje
   chokidar: 3.5.3
   cz-conventional-changelog: 3.3.0_@swc+core@1.3.26
-  directories-js: 0.1.0
+  env-paths: 3.0.0
   eslint: 8.32.0
   eslint-config-prettier: 8.6.0_eslint@8.32.0
   husky: 8.0.3
@@ -1939,10 +1939,6 @@ packages:
       path-type: 4.0.0
     dev: true
 
-  /directories-js/0.1.0:
-    resolution: {integrity: sha512-bSqsIuYz0QmGoj3tDMOsGCZmEo3IPHabHTjLWIxMBV1vkL9yaLFUAA8mwVlSWMWAhdpj8war7JG9YZlJcNSqwg==}
-    dev: true
-
   /doctrine/3.0.0:
     resolution: {integrity: sha512-yS+Q5i3hBf7GBkd4KG8a7eBNNWNGLTaEwwYWUijIYM7zrlYDM0BFXHjjPWlWZ1Rg7UaddZeIDmi9jF3HmqiQ2w==}
     engines: {node: '>=6.0.0'}
@@ -2010,6 +2006,11 @@ packages:
       execa: 5.1.1
       fromentries: 1.3.2
       java-properties: 1.0.2
+    dev: true
+
+  /env-paths/3.0.0:
+    resolution: {integrity: sha512-dtJUTepzMW3Lm/NPxRf3wP4642UWhjL2sQxc+ym2YMj1m/H2zDNQOlezafzkHwn6sMstjHTwG6iQQsctDW/b1A==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
     dev: true
 
   /error-ex/1.3.2:

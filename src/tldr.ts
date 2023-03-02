@@ -17,12 +17,8 @@ export function resolveConfig(
   pageRepo: string,
   readmePath: string
 ): Config {
-  const dirs = directories({
-    qualifier: 'org',
-    organization: pkg.author,
-    application: pkg.name,
-  });
-  const dataDir = dirs.data();
+  const dirs = directories(pkg.name);
+  const dataDir = dirs.data;
   if (dataDir === null) {
     throw new Error('failed to get data dir');
   }
