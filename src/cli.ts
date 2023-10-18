@@ -42,7 +42,7 @@ const { _: commands, update, language, platform, version } = args;
 
 if (version) {
   console.log(
-    `${pkg.name} ${pkg.version} (tldr-pages client specification ${SPEC_VERSION})`
+    `${pkg.name} ${pkg.version} (tldr-pages client specification ${SPEC_VERSION})`,
   );
   process.exit();
 }

@@ -18,8 +18,8 @@ export const canonicalPlatforms = [
   'android',
   'common',
 ] as const;
-export type knownPlatform = typeof knownPlatforms[number];
-export type CanonicalPlatform = typeof canonicalPlatforms[number];
+export type knownPlatform = (typeof knownPlatforms)[number];
+export type CanonicalPlatform = (typeof canonicalPlatforms)[number];
 
 const platformMap = {
   osx: 'osx',
@@ -37,6 +37,6 @@ function isKnown(platform: string): platform is knownPlatform {
   return Object.hasOwn(platformMap, platform);
 }
 
-export function normalize(platform: string): CanonicalPlatform | string {
+export function normalize(platform: string): string {
   return isKnown(platform) ? platformMap[platform] : platform;
 }

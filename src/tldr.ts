@@ -1,10 +1,13 @@
 import path from 'node:path';
 // node:fs/promises won't work
-import fs from 'node:fs';
+import util from 'node:util';
+import child_process from 'node:child_process';
 import { Page } from './page.js';
 import { ensureDir, pathExists } from './utils.js';
 import { PKG } from './cli.js';
 import directories from './directories.js';
+
+const exec = util.promisify(child_process.exec);
 
 export interface Config {
   dataDir: string;
@@ -15,7 +18,7 @@ export interface Config {
 export function resolveConfig(
   pkg: PKG,
   pageRepo: string,
-  readmePath: string
+  readmePath: string,
 ): Config {
   const dirs = directories(pkg.name);
   const dataDir = dirs.data;
@@ -41,38 +44,24 @@ export class Tldr {
   }
 
   async hasCloned() {
-    return await pathExists(this.dir);
+    return (
+      await Promise.all([
+        pathExists(this.dir),
+        pathExists(path.join(this.dir, '.git')),
+      ])
+    ).every((exists) => exists);
   }
 
   private async clone() {
     console.log('Downloading pages...');
     await ensureDir(this.dir);
-    const { clone } = await import('isomorphic-git');
-    const http = await import('isomorphic-git/http/node/index.js');
-    await clone({
-      fs,
-      http,
-      dir: this.dir,
-      url: this.url,
-      depth: 1,
-    });
+    await exec(`git clone ${this.url} ${this.dir} --depth 1`);
     console.log('Pages downloaded');
   }
 
   private async pull() {
     console.log('Updating pages...');
-    const { pull } = await import('isomorphic-git');
-    const http = await import('isomorphic-git/http/node/index.js');
-    await pull({
-      fs,
-      http,
-      dir: this.dir,
-      url: this.url,
-      // https://github.com/isomorphic-git/isomorphic-git/issues/107
-      author: {
-        name: 'tldr-ts',
-      },
-    });
+    await exec('git pull', { cwd: this.dir });
     console.log('Pages updated');
   }
 
@@ -95,14 +84,14 @@ export class Tldr {
       this.dir,
       `pages${language === 'en' ? '' : '.' + language}`,
       platform,
-      `${command}.md`
+      `${command}.md`,
     );
   }
 
   private async locatePage(
     command: string,
     language: string,
-    platform: string
+    platform: string,
   ): Promise<string | null> {
     const languages = new Set<string>();
     languages.add(language);
@@ -114,7 +103,7 @@ export class Tldr {
       this.mkdPath(command, language, 'common'),
     ]);
 
-    const exist = await Promise.all(candidates.map((path) => pathExists(path)));
+    const exist = await Promise.all(candidates.map(pathExists));
     const index = exist.indexOf(true);
 
     if (index === -1) {

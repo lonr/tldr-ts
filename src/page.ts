@@ -36,7 +36,7 @@ export class Page {
                 exampleCode(
                   buffer
                     .slice(1, buffer.length - 1)
-                    .replaceAll(/{{([^}]*)}}/g, exampleCodeHighlighted('$1'))
+                    .replaceAll(/{{([^}]*)}}/g, exampleCodeHighlighted('$1')),
                 ) +
                 '\n';
               break;
