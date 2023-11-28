@@ -61,7 +61,8 @@ export class Tldr {
 
   private async pull() {
     console.log('Updating pages...');
-    await exec('git pull', { cwd: this.dir });
+    await exec('git fetch', { cwd: this.dir });
+    await exec('git reset --hard origin/main', { cwd: this.dir });
     console.log('Pages updated');
   }
 

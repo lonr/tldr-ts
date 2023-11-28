@@ -9,7 +9,7 @@ export { pkg };
 export type PKG = typeof pkg;
 
 // handwrite the version as `package.json` will be inlined by rollup
-pkg.version = '1.1.4';
+pkg.version = '1.1.6';
 const SPEC_VERSION = '1.5';
 const PAGES_REPO = 'https://github.com/tldr-pages/tldr';
 const ROOT_DIR = fileURLToPath(new URL('../', import.meta.url));
