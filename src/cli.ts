@@ -1,19 +1,6 @@
-import { platform as localPlatform } from 'node:os';
-import { fileURLToPath } from 'node:url';
+#!/usr/bin/env node
 import parseArgs from 'minimist';
-import { resolve } from 'node:path';
-import { normalize } from './platform.js';
-import { resolveConfig, Tldr } from './tldr.js';
-import pkg from '#package.json' assert { type: 'json' };
-export { pkg };
-export type PKG = typeof pkg;
-
-// handwrite the version as `package.json` will be inlined by rollup
-pkg.version = '1.1.6';
-const SPEC_VERSION = '1.5';
-const PAGES_REPO = 'https://github.com/tldr-pages/tldr';
-const ROOT_DIR = fileURLToPath(new URL('../', import.meta.url));
-const README_PATH = resolve(ROOT_DIR, 'README.md');
+import { tldr } from './tldr.js';
 
 export type Args = {
   _: string[];
@@ -34,33 +21,53 @@ const args: Args = parseArgs(process.argv.slice(2), {
   },
   default: {
     language: Intl.DateTimeFormat().resolvedOptions().locale,
-    platform: localPlatform(),
+    // https://nodejs.org/api/process.html#processplatform
+    platform: process.platform,
   },
 }) as Args;
 
 const { _: commands, update, language, platform, version } = args;
 
 if (version) {
-  console.log(
-    `${pkg.name} ${pkg.version} (tldr-pages client specification ${SPEC_VERSION})`,
-  );
+  await tldr.printVersion();
   process.exit();
 }
-
-const tldr = new Tldr(resolveConfig(pkg, PAGES_REPO, README_PATH));
 
 if (update) {
   await tldr.update();
   process.exit();
 }
 
-await tldr.init();
-
 if (commands.length === 0) {
-  await tldr.renderReadme();
+  await tldr.renderLocalReadme();
   process.exit();
 }
 
+// https://github.com/tldr-pages/tldr-node-client/blob/master/lib/platforms.js
+const folders = {
+  osx: 'osx',
+  macos: 'osx',
+  darwin: 'osx',
+  linux: 'linux',
+  sunos: 'sunos',
+  freebsd: 'freebsd',
+  openbsd: 'openbsd',
+  netbsd: 'netbsd',
+  windows: 'windows',
+  win32: 'windows',
+  android: 'android',
+  common: 'common',
+} as const;
+
+function isSupported(platform: string): platform is keyof typeof folders {
+  return Object.keys(folders).includes(platform);
+}
+
+export function normalize(platform: string): string {
+  return isSupported(platform) ? folders[platform] : platform;
+}
+
 const command = commands.join('-').toLowerCase();
-const normalizedPlatform = normalize(platform);
-await tldr.renderPage(command, language, normalizedPlatform);
+
+await tldr.ensurePagesDownloaded();
+await tldr.renderPage(command, language, normalize(platform));
