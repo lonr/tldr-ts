@@ -15,6 +15,7 @@ const SPEC_VERSION = '2.2';
 const PAGES_REPO = 'https://github.com/tldr-pages/tldr';
 const ROOT_DIR = fileURLToPath(new URL('../', import.meta.url));
 const README_PATH = resolve(ROOT_DIR, 'README.md');
+const PACKAGE_JSON_PATH = resolve(ROOT_DIR, 'package.json');
 
 const SPACES = '  ';
 
@@ -81,7 +82,7 @@ class TLDR {
   async printVersion() {
     const {
       default: { version },
-    } = (await import('#package.json', {
+    } = (await import(PACKAGE_JSON_PATH, {
       with: { type: 'json' },
     })) as { default: { version: string } };
     console.log(

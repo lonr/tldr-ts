@@ -12,9 +12,6 @@
   "license": "MIT",
   "author": "lonr",
   "type": "module",
-  "imports": {
-    "#package.json": "./package.json"
-  },
   "bin": {
     "tldr": "dist/cli.js"
   },
