@@ -15,7 +15,6 @@ const SPEC_VERSION = '2.2';
 const PAGES_REPO = 'https://github.com/tldr-pages/tldr';
 const ROOT_DIR = fileURLToPath(new URL('../', import.meta.url));
 const README_PATH = resolve(ROOT_DIR, 'README.md');
-const PACKAGE_JSON_PATH = resolve(ROOT_DIR, 'package.json');
 
 const SPACES = '  ';
 
@@ -36,7 +35,6 @@ class TLDR {
   public pagesDir: string;
   public pagesRepo: string;
   public localReadmePath: string;
-  public packageJsonPath: string;
 
   constructor() {
     const { data } = envPaths(APP_NAME, { suffix: '' });
@@ -46,7 +44,6 @@ class TLDR {
     this.pagesDir = path.join(data, 'tldr-pages');
     this.pagesRepo = PAGES_REPO;
     this.localReadmePath = README_PATH;
-    this.packageJsonPath = PACKAGE_JSON_PATH;
   }
 
   async havePagesDownloaded() {
@@ -82,9 +79,11 @@ class TLDR {
   }
 
   async printVersion() {
-    const { version } = (await import(PACKAGE_JSON_PATH, {
+    const {
+      default: { version },
+    } = (await import('#package.json', {
       with: { type: 'json' },
-    })) as { version: string };
+    })) as { default: { version: string } };
     console.log(
       `${APP_NAME} ${version} (tldr-pages client specification ${SPEC_VERSION})`,
     );

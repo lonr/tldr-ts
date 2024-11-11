@@ -2,6 +2,8 @@
 import parseArgs from 'minimist';
 import { tldr } from './tldr.js';
 
+process.removeAllListeners('warning');
+
 export type Args = {
   _: string[];
   platform: string;
