@@ -26,8 +26,8 @@ const exampleCodeHighlighted = pico.underline;
 // (The MIT License)
 // Copyright (c) 2011-2024 JP Richardson
 // https://github.com/jprichardson/node-fs-extra/blob/master/lib/path-exists/index.js
-async function pathExists(path: string) {
-  return access(path)
+async function pathExists(filePath: string) {
+  return access(filePath)
     .then(() => true)
     .catch(() => false);
 }
@@ -54,7 +54,7 @@ class TLDR {
   private async downloadPages() {
     console.log('Downloading pages...');
     await mkdir(this.pagesDir, { recursive: true });
-    await exec(`git clone ${this.pagesRepo} ${this.pagesDir} --depth 1`);
+    await exec(`git clone ${this.pagesRepo} "${this.pagesDir}" --depth 1`);
     console.log('Pages downloaded');
   }
 
